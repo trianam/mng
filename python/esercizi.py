@@ -5,24 +5,34 @@ import sympy
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import axes3d
 
-def deCasteljau(V, n, t):
+def deCasteljau(V, t, n = None):
     """
     calculate the value of the Bezier curve in a point.
 
     Arguments:
     - V (numpy.Array): the vector of the n+1 control points (matrix n+1 X 2: column 1 = x; column 2 = y);
-    - n (number): the grade of the curve;
     - t (number): the parameter on wich I want to evaluate the curve.
+    - n (number): the grade of the curve;
 
-    Return: the point of the curve in t.
+    Return: a tuple containing
+    - the point of the curve in t;
+    - the control points of the splitted curve from 0 to t;
+    - the control points of the splitted curve from t to 1;
     """
+
+    if n is None:
+        n = len(V)-1
     
-    #Q = np.copy(V)
-    Q = V.astype(float)
+    C2 = V.astype(float)
+    C1 = np.empty_like(C2)
     for k in range(1, n+1):
+        C1[k-1] = C2[0] 
         for i in range(0, n-k+1):
-            Q[i] = (1.0 - t)*Q[i] + t*Q[i+1]
-    return Q[0]
+            C2[i] = (1.0 - t)*C2[i] + t*C2[i+1]
+
+    C1[n] = C2[0]
+
+    return (C2[0], C1, C2[::-1])
 
 def isBidimensional(V):
     """
@@ -36,25 +46,40 @@ def isTridimensional(V):
     """
     return len(V[0,:]) == 3
 
-def bezier(V, step):
+def bezier(V, tMin = 0., tMax = 1., step = 0.01):
     """
     calculate points of the Bezier curve.
 
     Arguments:
     - V (numpy.array): the vector of control vertex (matrix n X 2: column 1 = x; column 2 = y);
+    - tMin (number): the min t of the evaluation of the curve;
+    - tMax (number): the max t of the evaluation of the curve;
     - step (number): the granularity of the points for t in [0,1].
 
     Return: all the points of the curve, the number of them depends of the step.
     """
-    n = len(V)-1
-
     C = [];
-    for t in np.arange(0,1+step,step):
-        C.append(deCasteljau(V, n, t))
+    for t in np.arange(tMin,tMax+step,step):
+        C.append(deCasteljau(V, t)[0])
 
     C = np.array(C)
 
     return C
+
+def splitControlPoints(V, tSplit):
+    """
+    calcutate points of the two Bezier curves obtained splitting
+    the curve defined by the passed control vertex in tSplit
+
+    Arguments:
+    - V
+    - tSplit
+
+    Return:
+    """
+
+    return deCasteljau(V, tSplit)[1:3]
+
 
 def drawVertexes(V):
     """
@@ -109,11 +134,11 @@ def mergePoly(X, Y):
     coeffY[-degY-1:] = Y.all_coeffs()[-degY-1:]
     return np.column_stack((coeffX[::-1], coeffY[::-1]))
 
-V = np.array([[0,0,0],[1,2,0],[3,2,3]])
+V = np.array([[0,0,0],[1,2,0],[3,2,3],[4,6,2]])
 plt.figure(figsize=(13, 8));
 if (isTridimensional(V)):
     plt.gca(projection='3d')
-drawVertexes(bezier(V, 0.01))
+drawVertexes(bezier(V))
 drawVertexes(V)
 plt.show()
 
@@ -123,7 +148,17 @@ P = mergePoly(X,Y)
 #P = np.array([[1,0],[1,0],[1,0],[0,1]])
 plt.figure(figsize=(13, 8));
 V = exp2bernstein(P)
-drawVertexes(bezier(V, 0.01))
+drawVertexes(bezier(V))
 drawVertexes(V)
 plt.show()
 
+V = np.array([[0,0,0],[1,2,0],[3,2,3],[4,6,2]])
+plt.figure(figsize=(13, 8));
+if (isTridimensional(V)):
+    plt.gca(projection='3d')
+C1,C2 = splitControlPoints(V, 0.6)
+drawVertexes(bezier(C1))
+drawVertexes(C1)
+drawVertexes(bezier(C2))
+drawVertexes(C2)
+plt.show()
