@@ -134,31 +134,63 @@ def mergePoly(X, Y):
     coeffY[-degY-1:] = Y.all_coeffs()[-degY-1:]
     return np.column_stack((coeffX[::-1], coeffY[::-1]))
 
-V = np.array([[0,0,0],[1,2,0],[3,2,3],[4,6,2]])
-plt.figure(figsize=(13, 8));
-if (isTridimensional(V)):
-    plt.gca(projection='3d')
-drawVertexes(bezier(V))
-drawVertexes(V)
-plt.show()
+def exer2():
+    V = np.array([[0,0,0],[1,2,0],[3,2,3],[2,6,2]])
+    plt.figure(figsize=(13, 8));
+    if (isTridimensional(V)):
+        plt.gca(projection='3d')
+    drawVertexes(bezier(V))
+    drawVertexes(V)
+    plt.show()
 
-X = sympy.Poly('1+t+t**2')
-Y = sympy.Poly('t**3')
-P = mergePoly(X,Y)
-#P = np.array([[1,0],[1,0],[1,0],[0,1]])
-plt.figure(figsize=(13, 8));
-V = exp2bernstein(P)
-drawVertexes(bezier(V))
-drawVertexes(V)
-plt.show()
+def exer3():
+    X = sympy.Poly('1+t+t**2')
+    Y = sympy.Poly('t**3')
+    P = mergePoly(X,Y)
+    #P = np.array([[1,0],[1,0],[1,0],[0,1]])
+    plt.figure(figsize=(13, 8));
+    V = exp2bernstein(P)
+    drawVertexes(bezier(V))
+    drawVertexes(V)
+    plt.show()
 
-V = np.array([[0,0,0],[1,2,0],[3,2,3],[4,6,2]])
-plt.figure(figsize=(13, 8));
-if (isTridimensional(V)):
-    plt.gca(projection='3d')
-C1,C2 = splitControlPoints(V, 0.6)
-drawVertexes(bezier(C1))
-drawVertexes(C1)
-drawVertexes(bezier(C2))
-drawVertexes(C2)
-plt.show()
+def exer4():
+    V = np.array([[0,0,0],[1,2,0],[3,2,3],[2,6,2]])
+    plt.figure(figsize=(13, 8));
+    if (isTridimensional(V)):
+        plt.gca(projection='3d')
+    C1,C2 = splitControlPoints(V, 0.6)
+    drawVertexes(bezier(C1))
+    drawVertexes(C1)
+    drawVertexes(bezier(C2))
+    drawVertexes(C2)
+    plt.show()
+
+def exer5():
+    V1 = np.array([[0,0,0],[1,2,0],[3,2,3],[2,6,2]])
+    V2 = np.array([[0,0,0],[1,2,0],[3,2,3],[3,2,3],[2,6,2]])
+    V3 = np.array([[0,0,0],[1,2,0],[3,2,3],[3,2,3],[3,2,3],[2,6,2]])
+    V4 = np.array([[0,0,0],[1,2,0],[3,2,3],[3,2,3],[3,2,3],[3,2,3],[2,6,2]])
+    plt.figure(figsize=(13, 8));
+    if (isTridimensional(V1)):
+        plt.gca(projection='3d')
+    drawVertexes(V1)
+    drawVertexes(bezier(V1))
+    drawVertexes(bezier(V2))
+    drawVertexes(bezier(V3))
+    drawVertexes(bezier(V4))
+    plt.show()
+
+
+menu = {
+    2 : exer2,
+    3 : exer3,
+    4 : exer4,
+    5 : exer5,
+    }
+    
+exer = 0
+while((exer < 2) or (exer > 5)):
+    exer = input('Execute exercise number: ')
+
+menu[exer]()
