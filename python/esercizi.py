@@ -134,6 +134,15 @@ def mergePoly(X, Y):
     coeffY[-degY-1:] = Y.all_coeffs()[-degY-1:]
     return np.column_stack((coeffX[::-1], coeffY[::-1]))
 
+def increaseGrade(V):
+    n = len(V) - 1
+    W = np.zeros(tuple(map(lambda a,b: a+b, V.shape, (2,0))))
+    W[1:-1] = V
+    for i in range(n+2,0,-1):
+        W[i] = ((i-1.)/(n+1.))*W[i-1] + (1. - (i-1.)/(n+1.))*W[i]
+
+    return W[1:]
+
 def exer2():
     V = np.array([[0,0,0],[1,2,0],[3,2,3],[2,6,2]])
     plt.figure(figsize=(13, 8));
@@ -181,16 +190,32 @@ def exer5():
     drawVertexes(bezier(V4))
     plt.show()
 
+def exer6():
+    V = np.array([[0,0,0],[1,2,0],[3,2,3],[2,6,2]])
+    V1 = increaseGrade(V)
+    V2 = increaseGrade(V1)
+    V3 = increaseGrade(V2)
+    plt.figure(figsize=(13, 8));
+    if (isTridimensional(V)):
+        plt.gca(projection='3d')
+    drawVertexes(bezier(V))
+    drawVertexes(V)
+    drawVertexes(V1)
+    drawVertexes(V2)
+    drawVertexes(V3)
+    plt.show()
+
 
 menu = {
     2 : exer2,
     3 : exer3,
     4 : exer4,
     5 : exer5,
+    6 : exer6,
     }
     
 exer = 0
-while((exer < 2) or (exer > 5)):
+while((exer < 2) or (exer > 6)):
     exer = input('Execute exercise number: ')
 
 menu[exer]()
