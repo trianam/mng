@@ -165,55 +165,39 @@ def increaseGrade(V):
 
     return W[1:]
 
-def attachWithC0(Vorig, Vextra, start=True):
+def attachWithC(Vorig, Vextra, C=2, hOrig=1., hAttach=1., start=True):
     """
     Attach to the curve defined by control vertexes Vorig
-    another curve with continuity C0 and extra vertexes Vextra.
+    another curve with continuity C and extra vertexes Vextra.
     To the start or end of Vorig. The dimension of returned will be
-    the dimension of Vextra + 1.
+    the dimension of Vextra + C+1.
 
     Arguments:
     - Vorig: the control vertexes of the original curve, they are not changed;
-    - Vextra: attach those vertex adding one further vertex for keeping C0 continuity;
+    - Vextra: attach those vertex adding two further vertexes for keeping C continuity;
+    - C: the continuity, can be 0, 1 or 2;
+    - hOrig: the length of the parametrization domain of vOrig in the total curve;
+    - hAttach: the length of the parametrization domain of the attached curve in the total curve;
     - start: if true attach to the start of Vorig, if false to the end.
 
     Returns: The control vertexes of the curve attached to Vorig
     """
 
-    W = np.zeros(tuple(map(lambda a,b: a+b, Vextra.shape, (1,0))))
+    W = np.zeros(tuple(map(lambda a,b: a+b, Vextra.shape, (C+1,0))))
     if start:
-        W[:-1] = Vextra
+        W[:-C-1] = Vextra
         W[-1] = Vorig[0]
+        if(C >= 1):
+            W[-2] = ((hAttach+hOrig)/hOrig)*Vorig[0] - (hAttach/hOrig)*Vorig[1]
+            if(C >= 2):
+                W[-3] = (hAttach/hOrig)*W[-2]+W[-2]-(hAttach/hOrig)*Vorig[1]-((hAttach/hOrig)**2)*(Vorig[1]-Vorig[2])
     else:
-        W[1:] = Vextra
+        W[C+1:] = Vextra
         W[0] = Vorig[-1]
-
-    return W
-
-def attachWithC1(Vorig, Vextra, start=True):
-    """
-    Attach to the curve defined by control vertexes Vorig
-    another curve with continuity C1 and extra vertexes Vextra.
-    To the start or end of Vorig. The dimension of returned will be
-    the dimension of Vextra + 2.
-
-    Arguments:
-    - Vorig: the control vertexes of the original curve, they are not changed;
-    - Vextra: attach those vertex adding two further vertexes for keeping C1 continuity;
-    - start: if true attach to the start of Vorig, if false to the end.
-
-    Returns: The control vertexes of the curve attached to Vorig
-    """
-
-    W = np.zeros(tuple(map(lambda a,b: a+b, Vextra.shape, (2,0))))
-    if start:
-        W[:-2] = Vextra
-        W[-1] = Vorig[0]
-        W[-2] = 2.*Vorig[0] - Vorig[1]
-    else:
-        W[2:] = Vextra
-        W[0] = Vorig[-1]
-        W[1] = 2.*Vorig[-1] - Vorig[-2]
+        if(C >= 1):
+            W[1] = ((hAttach+hOrig)/hOrig)*Vorig[-1] - (hAttach/hOrig)*Vorig[-2]
+            if(C >= 2):
+                W[2] = (hAttach/hOrig)*W[1]+W[1]-(hAttach/hOrig)*Vorig[-2]-((hAttach/hOrig)**2)*(Vorig[-2]-Vorig[-3])
 
     return W
 
@@ -280,8 +264,8 @@ def exer6():
     plt.show()
 
 def exer7():
-    V = np.array([[0,0,0],[1,2,0],[3,2,3],[2,6,2]])
-    W = attachWithC1(V, np.array([[-2,1,3],[-1,3,5]]),False)
+    V = np.array([[0,0,0],[1,2,0],[3,2,0],[6,-1,0]])
+    W = attachWithC(V, np.array([[2,-1,3]]),C=2,hOrig=1.,hAttach=1.)
     plt.figure(figsize=(13, 8));
     if (isTridimensional(V)):
         plt.gca(projection='3d')
