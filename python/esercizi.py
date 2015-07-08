@@ -90,10 +90,11 @@ def splitControlPoints(V, tSplit):
     the curve defined by the passed control vertex in tSplit
 
     Arguments:
-    - V
-    - tSplit
+    - V: the control points of the original curva
+    - tSplit: the point in the parametric domain where to split the curve
 
-    Return:
+    Return: a tuple with the control points of the first
+            and the control points of the second part of the curve
     """
 
     return deCasteljau(V, tSplit)[1:3]
@@ -153,6 +154,9 @@ def mergePoly(X, Y):
     return np.column_stack((coeffX[::-1], coeffY[::-1]))
 
 def increaseGrade(V):
+    """
+    Increase by one the grade of the curve represented by passed control vertexes.
+    """
     n = len(V) - 1
     W = np.zeros(tuple(map(lambda a,b: a+b, V.shape, (2,0))))
     W[1:-1] = V
@@ -160,6 +164,58 @@ def increaseGrade(V):
         W[i] = ((i-1.)/(n+1.))*W[i-1] + (1. - (i-1.)/(n+1.))*W[i]
 
     return W[1:]
+
+def attachWithC0(Vorig, Vextra, start=True):
+    """
+    Attach to the curve defined by control vertexes Vorig
+    another curve with continuity C0 and extra vertexes Vextra.
+    To the start or end of Vorig. The dimension of returned will be
+    the dimension of Vextra + 1.
+
+    Arguments:
+    - Vorig: the control vertexes of the original curve, they are not changed;
+    - Vextra: attach those vertex adding one further vertex for keeping C0 continuity;
+    - start: if true attach to the start of Vorig, if false to the end.
+
+    Returns: The control vertexes of the curve attached to Vorig
+    """
+
+    W = np.zeros(tuple(map(lambda a,b: a+b, Vextra.shape, (1,0))))
+    if start:
+        W[:-1] = Vextra
+        W[-1] = Vorig[0]
+    else:
+        W[1:] = Vextra
+        W[0] = Vorig[-1]
+
+    return W
+
+def attachWithC1(Vorig, Vextra, start=True):
+    """
+    Attach to the curve defined by control vertexes Vorig
+    another curve with continuity C1 and extra vertexes Vextra.
+    To the start or end of Vorig. The dimension of returned will be
+    the dimension of Vextra + 2.
+
+    Arguments:
+    - Vorig: the control vertexes of the original curve, they are not changed;
+    - Vextra: attach those vertex adding two further vertexes for keeping C1 continuity;
+    - start: if true attach to the start of Vorig, if false to the end.
+
+    Returns: The control vertexes of the curve attached to Vorig
+    """
+
+    W = np.zeros(tuple(map(lambda a,b: a+b, Vextra.shape, (2,0))))
+    if start:
+        W[:-2] = Vextra
+        W[-1] = Vorig[0]
+        W[-2] = 2.*Vorig[0] - Vorig[1]
+    else:
+        W[2:] = Vextra
+        W[0] = Vorig[-1]
+        W[1] = 2.*Vorig[-1] - Vorig[-2]
+
+    return W
 
 def exer2():
     V = np.array([[0,0,0],[1,2,0],[3,2,3],[2,6,2]])
@@ -223,17 +279,36 @@ def exer6():
     drawVertexes(V3)
     plt.show()
 
-
+def exer7():
+    V = np.array([[0,0,0],[1,2,0],[3,2,3],[2,6,2]])
+    W = attachWithC1(V, np.array([[-2,1,3],[-1,3,5]]),False)
+    plt.figure(figsize=(13, 8));
+    if (isTridimensional(V)):
+        plt.gca(projection='3d')
+    drawVertexes(bezier(V))
+    drawVertexes(V)
+    drawVertexes(bezier(W))
+    drawVertexes(W)
+    plt.show()
+    
 menu = {
     2 : exer2,
     3 : exer3,
     4 : exer4,
     5 : exer5,
     6 : exer6,
+    7 : exer7,
     }
-    
+
+
+def checkIn(v):
+    try:
+        return int(v)
+    except:
+        return 0
+
 exer = 0
-while((exer < 2) or (exer > 6)):
-    exer = input('Execute exercise number: ')
+while(exer not in menu.keys()):
+    exer = checkIn(raw_input('Execute exercise number: '))
 
 menu[exer]()
