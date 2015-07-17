@@ -260,6 +260,10 @@ def bSplineBaseFactory(part,k):
 
     Returns: the function that give a base for a given i and h.
     """
+    if (part[len(part)-k+1 : len(part)] == part[len(part)-k : len(part)-1]).all():
+        iEnd = len(part)-k
+    else:
+        iEnd = len(part) -1
 
     def N(i,h=k):
         """
@@ -293,7 +297,11 @@ def bSplineBaseFactory(part,k):
 
                 return a + b
             else:
-                if ((part[i] <= t) and ((t < part[i+1]) or ((i+1 == len(part)-k) and (t == part[i+1])))):
+                #if ((part[i] <= t) and (t < part[i+1])):
+                #if ((part[i] <= t) and ((t < part[i+1]) or ((i+1 == len(part)-k) and (t == part[i+1])))):
+                #if ((part[i] <= t) and ((t < part[i+1]) or ((i+1 == len(part)-1) and (t == part[i+1])))):
+                if ((part[i] <= t) and ((t < part[i+1]) or ((i+1 == iEnd) and (t == part[iEnd])))):
+
                     return 1.
                 else:
                     return 0.
@@ -348,6 +356,27 @@ def bSpline(V, k, part, step = 0.01):
         P = np.append(P, [C(t)], axis=0)
 
     return P
+
+def bSplineClosed(V, k, step = 0.01):
+    """
+    calculate the points of the closed B-spline curve defined by the
+    given control points and of the given order.
+
+    Arguments:
+    - V: the control points vector, if the poligon is "open" that will be "closed";
+    - k: the order;
+    - step: the steps in the domain for creating the points.
+
+    Returns:
+    the array of points in the space of the curve.
+    """
+    if not (V[0] == V[-1]).all():
+        V = np.vstack((V,V[0]))
+    return bSpline(
+        np.concatenate((V,V[1:k+1])),
+        k,
+        np.arange(float(-k)/float(len(V)-1), float(k+len(V))/float(len(V)-1), 1./float(len(V)-1)),
+        step)
 
 def bSplineBases(part, k, step = 0.01):
     """
@@ -556,24 +585,59 @@ def example2():
 
     plt.show()
 
+def example3():
+    V = np.array([[-0.,0.], [-0.,6.], [-1.,5.], [-3.,8.], [-1.,14.],[2.,14.],[4.,8.], [2.,5.], [1.,6.], [1.,0.]])
+    k = 4
+    pc = np.array([0., 0., 0., 0., 1./7., 2./7., 3./7., 4./7., 5./7., 6./7., 1., 1., 1., 1.])
+    pnc = np.array([-3./7., -2./7., -1./7., 0., 1./7., 2./7., 3./7., 4./7., 5./7., 6./7., 1., 8./7., 9./7., 10./7.])
+
+    
+    plt.figure(figsize=(13, 8));
+    for base in bSplineBases(pc, k):
+        drawVertexes(base)
+    
+    plt.figure(figsize=(13, 8));
+    drawVertexes(V)
+    drawVertexes(bSpline(V, k, pc))
+
+    plt.figure(figsize=(13, 8));
+    for base in bSplineBases(pnc, k):
+        drawVertexes(base)
+
+    plt.figure(figsize=(13, 8));
+    drawVertexes(V)
+    drawVertexes(bSpline(V, k, pnc))
+
+    plt.show()
+
+def example4():
+    V = np.array([[0.,0.], [0.,6.], [-1.,5.], [-3.,8.], [-1.,14.],[2.,14.],[4.,8.], [2.,5.], [1.,6.], [1.,0.]])
+    k = 4
+
+    plt.figure(figsize=(13, 8))
+
+    drawVertexes(V, 'o')
+    drawVertexes(V)
+    drawVertexes(bSplineClosed(V, k))
+
+    plt.show()
+
 
 def exerB_1():
     V = np.array([[0.5,0.5], [0.4,1.], [1.,1.2], [0.9,0.], [2., 0.1], [1.5, 0.6]])
 
-    ks = np.array([2, 3, 4, 5, 6])
-    ps = np.array([
-        [0., 0., 1./5., 2./5., 3./5., 4./5., 1., 1.],
-        [0., 0., 0., 1./4., 1./2., 3./4., 1., 1., 1.],
-        [0., 0., 0., 0., 1./3., 2./3., 1., 1., 1., 1.],
-        [0., 0., 0., 0., 0., 1./2., 1., 1., 1., 1., 1.],
-        [0., 0., 0., 0., 0., 0., 1., 1., 1., 1., 1., 1.],
-    ])
+    ks = [2, 3, 4, 5, 6]
+    ps = [
+        np.array([0., 0., 1./5., 2./5., 3./5., 4./5., 1., 1.]),
+        np.array([0., 0., 0., 1./4., 1./2., 3./4., 1., 1., 1.]),
+        np.array([0., 0., 0., 0., 1./3., 2./3., 1., 1., 1., 1.]),
+        np.array([0., 0., 0., 0., 0., 1./2., 1., 1., 1., 1., 1.]),
+        np.array([0., 0., 0., 0., 0., 0., 1., 1., 1., 1., 1., 1.]),
+    ]
 
     plt.figure(figsize=(13, 8))
-    for p,k in zip(ps, ks):
-        if (isTridimensional(V)):
-            plt.gca(projection='3d')
 
+    for p,k in zip(ps, ks):
         drawVertexes(bSpline(V, k, p))
 
     drawVertexes(V, 'o')
@@ -582,26 +646,103 @@ def exerB_1():
 def exerB_2():
     V = np.array([[0.,0.], [-0.4,-0.1], [-1.,0.2], [-0.1,1.], [1., 1.1], [1.1, 0.6], [1.2, 0.7], [1.3, 1.2], [2., 0.8], [2.5, 0.7]])
 
-    ks = np.array([4, 4, 6, 6, 8])
-    ps = np.array([
-        [0., 0., 0., 0., 1., 2., 3., 4., 5., 6., 7., 8., 9., 10.],
-        [0., 0., 0., 0., 1., 1., 2., 2., 3., 3., 4., 4., 4., 4.],
-        [0., 0., 0., 0., 0., 0., 1., 2., 3., 4., 5., 5., 5., 5., 5., 5.],
-        [0., 0., 0., 0., 0., 0., 1., 2., 3., 3., 4., 4., 4., 4., 4., 4.],
-        [0., 0., 0., 0., 0., 0., 0., 0., 1., 2., 3., 3., 3., 3., 3., 3., 3., 3.],
-    ])
+    ks = [4, 4, 6, 6, 8]
+    ps = [
+        np.array([0., 0., 0., 0., 1., 2., 3., 4., 5., 6., 7., 8., 9., 10.]),
+        np.array([0., 0., 0., 0., 1., 1., 2., 2., 3., 3., 4., 4., 4., 4.]),
+        np.array([0., 0., 0., 0., 0., 0., 1., 2., 3., 4., 5., 5., 5., 5., 5., 5.]),
+        np.array([0., 0., 0., 0., 0., 0., 1., 2., 3., 3., 4., 4., 4., 4., 4., 4.]),
+        np.array([0., 0., 0., 0., 0., 0., 0., 0., 1., 2., 3., 3., 3., 3., 3., 3., 3., 3.]),
+    ]
 
     plt.figure(figsize=(13, 8))
-    for p,k in zip(ps, ks):
-        if (isTridimensional(V)):
-            plt.gca(projection='3d')
 
+    for p,k in zip(ps, ks):
         drawVertexes(bSpline(V, k, p))
 
     drawVertexes(V, 'o')
     drawVertexes(V)
     plt.show()
+    
+def exerB_3():
+    V = np.array([[0.,2.], [1.,0.], [2.,1.], [2.,1.], [3., 0.], [4., 2.]])
 
+    k = 3
+    p= np.array([0., 0., 0., 1./4., 1./2., 3./4., 1., 1., 1.])
+
+    plt.figure(figsize=(13, 8))
+
+    drawVertexes(V, 'o')
+    drawVertexes(V)
+    drawVertexes(bSpline(V, k, p))
+
+    plt.show()
+
+def exerB_4():
+    V = np.array([[1.,0.], [0.,1.], [2.,1.5], [2.,1.5], [4., 1.], [3., 0.]])
+
+    k = 4
+    ps = [
+        np.array([0., 0., 0., 0., 1./4., 3./4., 1., 1., 1., 1.]),
+        np.array([0., 0., 0., 0., 1./2., 1./2., 1., 1., 1., 1.]),
+    ]
+
+    plt.figure(figsize=(13, 8))
+
+    drawVertexes(V, 'o')
+    drawVertexes(V)
+
+    for p in ps:
+        drawVertexes(bSpline(V, k, p))
+
+    plt.show()
+
+def exerB_5():
+    Vs = [
+        np.array([[0.,1.], [1.,0.], [2.,1.], [3., 0.], [4., 1.]]),
+        np.array([[0.,1.], [1.,0.], [2.,1.], [2.,1.], [3., 0.], [4., 1.]]),
+        np.array([[0.,1.], [1.,0.], [2.,1.], [2.,1.], [2.,1.], [3., 0.], [4., 1.]])
+    ]
+
+    ks = [4,4,4]
+    ps = [
+        np.array([0., 0., 0., 0.,1./2., 1., 1., 1., 1.]),
+        np.array([0., 0., 0., 0., 1./4., 3./4.,1., 1., 1., 1.]),
+        np.array([0., 0., 0., 0., 1./2., 1./2., 1./2.,1., 1., 1., 1.])
+    ]
+    
+    plt.figure(figsize=(13, 8))
+
+    drawVertexes(Vs[0], 'o')
+    drawVertexes(Vs[0])
+    for V,k,p in zip(Vs,ks,ps):
+        drawVertexes(bSpline(V, k, p))
+
+    plt.show()
+
+def exerB_6a():
+    V = np.array([[1.,0.], [0.,1.], [2.,2.], [3., 0.]])
+    k = 4
+
+    plt.figure(figsize=(13, 8))
+
+    drawVertexes(V, 'o')
+    drawVertexes(V)
+    drawVertexes(bSplineClosed(V, k))
+
+    plt.show()
+
+def exerB_6b():
+    V = np.array([[0.,0.], [0.,3.], [1.,2.], [2., 3.], [2.,0.], [1.,1.], [0.,0.]])
+    k = 4
+
+    plt.figure(figsize=(13, 8))
+
+    drawVertexes(V, 'o')
+    drawVertexes(V)
+    drawVertexes(bSplineClosed(V, k))
+
+    plt.show()
 
 menu = {
     '1.2' : exer1_2,
@@ -617,8 +758,15 @@ menu = {
     't1' : test1,
     'e1' : example1,
     'e2' : example2,
+    'e3' : example3,
+    'e4' : example4,
     'b1' : exerB_1,
     'b2' : exerB_2,
+    'b3' : exerB_3,
+    'b4' : exerB_4,
+    'b5' : exerB_5,
+    'b6a' : exerB_6a,
+    'b6b' : exerB_6b,
     }
 
 
