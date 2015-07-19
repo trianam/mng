@@ -59,6 +59,7 @@ class E(tk.Tk):
                 'example 2' : exe.example2,
                 'example 3' : exe.example3,
                 'example 4' : exe.example4,
+                'example 5' : exe.example5,
                 'exercise 1' : exe.exerB_1,
                 'exercise 2' : exe.exerB_2,
                 'exercise 3' : exe.exerB_3,
@@ -101,15 +102,16 @@ class E(tk.Tk):
         for butt in self.exerButtons:
             butt.destroy()
         for exer in sorted(self.menu[self.exerType.get()].keys()):
-            self.exerButtons.append(tk.Button(self.controlFrame,text=exer,command=partial(self.execExer, self.menu[self.exerType.get()][exer])))
-            self.exerButtons[-1].pack()
+            self.exerButtons.append(tk.Button(self.controlFrame,text=exer,command=partial(self.execExer, exer)))
+            self.exerButtons[-1].pack(fill=tk.BOTH, expand=1)
 
 
     def execExer(self, exer):
         self.plot.clear()
         plt.clf()
+        self.fig.suptitle(self.exerType.get()+' - '+exer)
 
-        exer()
+        self.menu[self.exerType.get()][exer]()
 
         self.canvas.draw()
         

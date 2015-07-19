@@ -350,7 +350,7 @@ def bSpline(V, k, part, step = 0.01):
     """
     C = bSplineFun(V,k,part=part)
     
-    P = np.empty((0,2), dtype=float);
+    P = np.empty((0,V.shape[1]), dtype=float);
     for t in np.arange(part[k-1],part[-k]+step,step):
         P = np.append(P, [C(t)], axis=0)
 

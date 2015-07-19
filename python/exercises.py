@@ -21,6 +21,8 @@ import sympy
 import numpy as np
 import math
 
+#Bezier
+
 def exer1_2():
     V = np.array([[0,0,0],[1,2,0],[3,2,3],[2,6,2]])
     fn.drawVertexes(fn.bezier(V))
@@ -113,7 +115,8 @@ def exer2_4():
         fn.drawVertexes(V)
         fn.drawVertexes(fn.bezierRational(V,W)[0])
         
-    
+
+#B-Splines
 
 def test1():
     V = np.array([[0.5,0.5], [0.4,1.], [1.,1.2], [0.9,0.], [2., 0.1], [1.5, 0.6]])
@@ -180,6 +183,17 @@ def example4():
     fn.drawVertexes(V, 'o')
     fn.drawVertexes(V)
     fn.drawVertexes(fn.bSplineClosed(V, k))
+
+def example5():
+    V = np.array([[0.,0.,0.], [0.,6.,1.], [-1.,5.,2.], [-3.,8.,3.], [-1.,14.,4.],[2.,14.,5.],[4.,8.,6.], [2.,5.,7.], [1.,6.,8.], [1.,0.,9.]])
+    k = 4
+
+    p = np.array([0.,0.,0.,0.,1./7.,2./7.,3./7.,4./7.,5./7.,6./7.,1.,1.,1.,1.])
+
+
+    fn.drawVertexes(V, 'o')
+    fn.drawVertexes(V)
+    fn.drawVertexes(fn.bSpline(V, k, p))
 
 
 
