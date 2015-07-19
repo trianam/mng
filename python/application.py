@@ -37,6 +37,7 @@ class E(tk.Tk):
 
 
         self.protocol("WM_DELETE_WINDOW", self.dest)
+        self.attributes('-zoomed', True)
         self.main()
 
     def main(self):
@@ -70,14 +71,17 @@ class E(tk.Tk):
             }
         }
 
-        self.fig = plt.figure(figsize=(13,7))
+        self.fig = plt.figure(figsize=(14,7))
 
-        self.mainFrame = tk.Frame(self)
-        self.mainFrame.grid(row=0, column=1)
+        self.upFrame = tk.Frame(self)
+        self.upFrame.pack(fill=tk.BOTH)
+
+        self.mainFrame = tk.Frame(self.upFrame)
+        self.mainFrame.pack(side=tk.RIGHT, fill=tk.BOTH)
 
         self.canvas = FigureCanvasTkAgg(self.fig, master=self.mainFrame)
-        self.canvas.get_tk_widget().pack(side='top', fill='both')
-        self.canvas._tkcanvas.pack(side='top', fill='both', expand=1)
+        self.canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH)
+        self.canvas._tkcanvas.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
 
         self.plot = self.fig.add_subplot(111)
 
@@ -85,8 +89,8 @@ class E(tk.Tk):
         self.toolbar.update()
         self.toolbar.pack()
 
-        self.controlFrame = tk.Frame(self)
-        self.controlFrame.grid(row=0, column=0)
+        self.controlFrame = tk.Frame(self.upFrame)
+        self.controlFrame.pack(side=tk.LEFT)
 
         tk.Label(self.controlFrame, text='Choose the curve type:', padx = 20).pack()
         self.exerType = tk.StringVar()
@@ -97,13 +101,23 @@ class E(tk.Tk):
 
         self.exerButtons = []
 
+        self.textFrame = tk.Frame(self)
+        self.textFrame.pack(fill=tk.X)
+        self.scrollbar = tk.Scrollbar(self.textFrame)
+        self.scrollbar.pack(side=tk.LEFT, fill=tk.Y)
+        
+        self.textArea = tk.Text(self.textFrame, height=4)
+
+        self.textArea.pack(side=tk.RIGHT, fill=tk.X, expand=True)
+        self.textArea.config(yscrollcommand=self.scrollbar.set, state=tk.DISABLED)
+        self.scrollbar.config(command=self.textArea.yview)
 
     def radioClick(self):
         for butt in self.exerButtons:
             butt.destroy()
         for exer in sorted(self.menu[self.exerType.get()].keys()):
             self.exerButtons.append(tk.Button(self.controlFrame,text=exer,command=partial(self.execExer, exer)))
-            self.exerButtons[-1].pack(fill=tk.BOTH, expand=1)
+            self.exerButtons[-1].pack(fill=tk.BOTH, expand=True)
 
 
     def execExer(self, exer):
@@ -114,6 +128,13 @@ class E(tk.Tk):
         self.menu[self.exerType.get()][exer]()
 
         self.canvas.draw()
+
+        helpText = self.menu[self.exerType.get()][exer].__doc__
+        self.textArea.config(state=tk.NORMAL)
+        self.textArea.delete(1.0, tk.END)
+        if helpText != None:
+            self.textArea.insert(tk.END, helpText)
+        self.textArea.config(state=tk.DISABLED)
         
     def dest(self):
         self.destroy()

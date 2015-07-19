@@ -105,9 +105,7 @@ def bezierRational(V, W, tMin = 0., tMax = 1., step = 0.01):
 
     Return: all the points of the curve, the number of them depends of the step.
     """
-    Vcomp = rational2Poly(V, W)
-    P = bezier(Vcomp, tMin, tMax, step)
-    return poly2Rational(P)
+    return poly2Rational(bezier(rational2Poly(V, W), tMin, tMax, step))
     
 def splitControlPoints(V, tSplit):
     """
