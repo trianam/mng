@@ -21,9 +21,6 @@ import sympy
 import numpy as np
 import math
 
-
-#Esercizi
-
 def exer1_2():
     V = np.array([[0,0,0],[1,2,0],[3,2,3],[2,6,2]])
     fn.drawVertexes(fn.bezier(V))

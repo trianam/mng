@@ -42,30 +42,30 @@ class E(tk.Tk):
     def main(self):
         self.menu = {
             'Bezier' : {
-                '1.2' : exe.exer1_2,
-                '1.3' : exe.exer1_3,
-                '1.4' : exe.exer1_4,
-                '1.5' : exe.exer1_5,
-                '1.6' : exe.exer1_6,
-                '1.7' : exe.exer1_7,
-                '2.1' : exe.exer2_1,
-                '2.2' : exe.exer2_2,
-                '2.3' : exe.exer2_3,
-                '2.4' : exe.exer2_4,
+                'exercise 1.2' : exe.exer1_2,
+                'exercise 1.3' : exe.exer1_3,
+                'exercise 1.4' : exe.exer1_4,
+                'exercise 1.5' : exe.exer1_5,
+                'exercise 1.6' : exe.exer1_6,
+                'exercise 1.7' : exe.exer1_7,
+                'exercise 2.1' : exe.exer2_1,
+                'exercise 2.2' : exe.exer2_2,
+                'exercise 2.3' : exe.exer2_3,
+                'exercise 2.4' : exe.exer2_4,
             },
             'B-Splines' : {
-                't1' : exe.test1,
-                'e1' : exe.example1,
-                'e2' : exe.example2,
-                'e3' : exe.example3,
-                'e4' : exe.example4,
-                'b1' : exe.exerB_1,
-                'b2' : exe.exerB_2,
-                'b3' : exe.exerB_3,
-                'b4' : exe.exerB_4,
-                'b5' : exe.exerB_5,
-                'b6a' : exe.exerB_6a,
-                'b6b' : exe.exerB_6b,
+                #'t1' : exe.test1,
+                'example 1' : exe.example1,
+                'example 2' : exe.example2,
+                'example 3' : exe.example3,
+                'example 4' : exe.example4,
+                'exercise 1' : exe.exerB_1,
+                'exercise 2' : exe.exerB_2,
+                'exercise 3' : exe.exerB_3,
+                'exercise 4' : exe.exerB_4,
+                'exercise 5' : exe.exerB_5,
+                'exercise 6a' : exe.exerB_6a,
+                'exercise 6b' : exe.exerB_6b,
             }
         }
 
@@ -89,7 +89,7 @@ class E(tk.Tk):
 
         tk.Label(self.controlFrame, text='Choose the curve type:', padx = 20).pack()
         self.exerType = tk.StringVar()
-        for currType in self.menu.keys():
+        for currType in sorted(self.menu.keys()):
             tk.Radiobutton(self.controlFrame, text=currType, variable=self.exerType, value=currType, command=self.radioClick).pack(anchor=tk.W)
 
         tk.Label(self.controlFrame, text='Choose the exercise:', padx = 20).pack()
@@ -100,7 +100,7 @@ class E(tk.Tk):
     def radioClick(self):
         for butt in self.exerButtons:
             butt.destroy()
-        for exer in self.menu[self.exerType.get()].keys():
+        for exer in sorted(self.menu[self.exerType.get()].keys()):
             self.exerButtons.append(tk.Button(self.controlFrame,text=exer,command=partial(self.execExer, self.menu[self.exerType.get()][exer])))
             self.exerButtons[-1].pack()
 
