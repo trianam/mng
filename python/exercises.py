@@ -30,6 +30,7 @@ def exer1_2():
     V = np.array([[0,0,0],[1,2,0],[3,2,3],[2,6,2]])
     fn.drawVertexes(fn.bezier(V))
     fn.drawVertexes(V)
+    fn.drawVertexes(V,'o')
 
 def exer1_3():
     """
@@ -45,6 +46,7 @@ def exer1_3():
     V = fn.exp2bernstein(P)
     fn.drawVertexes(fn.bezier(V))
     fn.drawVertexes(V)
+    fn.drawVertexes(V,'o')
 
 def exer1_4():
     """
@@ -55,8 +57,10 @@ def exer1_4():
     C1,C2 = fn.splitControlPoints(V, 0.6)
     fn.drawVertexes(fn.bezier(C1))
     fn.drawVertexes(C1)
+    fn.drawVertexes(C1,'o')
     fn.drawVertexes(fn.bezier(C2))
     fn.drawVertexes(C2)
+    fn.drawVertexes(C2,'o')
 
 def exer1_5():
     """
@@ -68,6 +72,7 @@ def exer1_5():
     V3 = np.array([[0,0,0],[1,2,0],[3,2,3],[3,2,3],[3,2,3],[2,6,2]])
     V4 = np.array([[0,0,0],[1,2,0],[3,2,3],[3,2,3],[3,2,3],[3,2,3],[2,6,2]])
     fn.drawVertexes(V1)
+    fn.drawVertexes(V1,'o')
     fn.drawVertexes(fn.bezier(V1))
     fn.drawVertexes(fn.bezier(V2))
     fn.drawVertexes(fn.bezier(V3))
@@ -84,9 +89,13 @@ def exer1_6():
     V3 = fn.increaseGrade(V2)
     fn.drawVertexes(fn.bezier(V))
     fn.drawVertexes(V)
+    fn.drawVertexes(V,'o')
     fn.drawVertexes(V1)
+    fn.drawVertexes(V1,'o')
     fn.drawVertexes(V2)
+    fn.drawVertexes(V2,'o')
     fn.drawVertexes(V3)
+    fn.drawVertexes(V3,'o')
 
 def exer1_7():
     """
@@ -98,8 +107,10 @@ def exer1_7():
     Va = fn.attachWithC(V, np.array([[2,-1,3]]),C=2,hOrig=1.,hAttach=1.)
     fn.drawVertexes(fn.bezier(V))
     fn.drawVertexes(V)
+    fn.drawVertexes(V,'o')
     fn.drawVertexes(fn.bezier(Va))
     fn.drawVertexes(Va)
+    fn.drawVertexes(Va,'o')
 
 def exer2_1():
     """
@@ -112,6 +123,7 @@ def exer2_1():
     W2 = np.array([1,2,1])
 
     fn.drawVertexes(V)
+    fn.drawVertexes(V,'o')
     P1 = fn.bezierRational(V,W1)[0]
     P2 = fn.bezierRational(V,W2)[0]
     fn.drawVertexes(P1)
@@ -130,9 +142,13 @@ def exer2_2():
     V3,W3 = fn.increaseGradeRational(V2, W2)
     fn.drawVertexes(fn.bezierRational(V,W)[0])
     fn.drawVertexes(V)
+    fn.drawVertexes(V,'o')
     fn.drawVertexes(V1)
+    fn.drawVertexes(V1,'o')
     fn.drawVertexes(V2)
+    fn.drawVertexes(V2,'o')
     fn.drawVertexes(V3)
+    fn.drawVertexes(V3,'o')
 
 def exer2_3():
     """
@@ -146,6 +162,7 @@ def exer2_3():
     W = np.array([1,math.sqrt(2)/2,1])
 
     fn.drawVertexes(V)
+    fn.drawVertexes(V,'o')
     fn.drawVertexes(fn.bezierRational(V,W)[0])
 
 def exer2_4():
@@ -224,6 +241,7 @@ def example3():
 
     
     fn.drawVertexes(V)
+    fn.drawVertexes(V,'o')
     fn.drawVertexes(fn.bSpline(V, k, pc))
     fn.drawVertexes(fn.bSpline(V, k, pnc))
 
